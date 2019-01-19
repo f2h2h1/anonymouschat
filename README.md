@@ -1,3 +1,9 @@
+# v2
+
+- 需要修改 application/config 文件夹下的 config.php 的 base_url
+- 修改 application/config 文件夹下的数据库配置 database.php
+
+# v1
 ## 简介
 - 这是一个能让用户在公众号界面匿名聊天的简单的公众号应用
 - 能发送文本，语音和图片
