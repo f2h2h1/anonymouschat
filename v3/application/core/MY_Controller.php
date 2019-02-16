@@ -5,6 +5,7 @@ class MY_Controller extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		date_default_timezone_set('Asia/Shanghai');
 		$this->load->library('session');
 		$this->load->helper('url');
 		// 请求类型
@@ -16,7 +17,7 @@ class MY_Controller extends CI_Controller
 		// ajax 请求
 		defined('IS_AJAX') OR define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
-		if (!($this->router->class === "Admin" && $this->router->method === "login"))
+		if ( ! ($this->router->class === "Admin" && $this->router->method === "login"))
 		{
 			$this->checkLogined();
 		}
@@ -32,7 +33,7 @@ class MY_Controller extends CI_Controller
 		return;
 	}
 
-	protected function _view($template, $data = NULL)
+	protected function _view(string $template, array $data = NULL) : CI_Loader
 	{
 		$base_url = str_replace($this->config->item('index_page'), "", $_SERVER['SCRIPT_NAME']);
 		$template = $this->router->class . "/" . $template;
@@ -49,17 +50,15 @@ class MY_Controller extends CI_Controller
 		if ($this->session->role !== NULL)
 		{
 			$current_data['username'] = $this->session->username;
+			$current_data['role'] = $this->session->role;
 		}
-		// $data['alert_msg'] = [
-		// 	'type' => 'danger',
-		// 	'msg' => 'test'
-		// ];
+
 		if (isset($this->session->alert_msg))
 		{
 			$current_data['alert_msg'] = $this->session->alert_msg;
 			$this->session->unset_userdata('alert_msg');
 		}
-		$this->load->view('public/_layout', $current_data);
+		return $this->load->view('public/_layout', $current_data);
 	}
 
 	/**
@@ -72,9 +71,9 @@ class MY_Controller extends CI_Controller
 		$this->session->set_userdata('alert_msg', ['type' => $type, 'msg' => $msg]);
 	}
 
-	protected function shortcut_error(string $view_name, string $msg, string $type = 'danger') : void
+	protected function shortcut_error(string $view_name, string $msg, string $type = 'danger') : CI_Loader
 	{
 		$this->set_alert_msg($msg, $type);
-		$this->_view($view_name);
+		return $this->_view($view_name);
 	}
 }

@@ -17,13 +17,13 @@ class Admin extends MY_Controller {
 		/**
 		 * 登录
 		 */
-		public function login() : void
+		public function login() : CI_Loader
 		{
 			if (IS_GET)
 			{
 				if ($this->session->role === NULL)
 				{
-					$this->load->view('login');
+					return $this->_view('login');
 				}
 				else 
 				{
@@ -35,11 +35,18 @@ class Admin extends MY_Controller {
 				$username = $this->input->post('username');
 				$password = $this->input->post('password');
 
-				$this->load->model('user_model');
-				$user = $this->user_model->login($username, $password);
-				if (count($user) === 0)
+				if (empty($username) or empty($password))
 				{
-					$this->load->view('login');
+					$this->set_alert_msg('登录失败，账号或密码错误');
+					return $this->_view('login');
+				}
+
+				$this->load->model('Admin/user_model');
+				$user = $this->user_model->login($username, $password);
+				if ($user === NULL)
+				{
+					$this->set_alert_msg('登录失败，账号或密码错误');
+					return $this->_view('login');
 				}
 
 				$this->session->set_userdata('role', (int)$user['role']);
@@ -47,7 +54,6 @@ class Admin extends MY_Controller {
 				$this->session->set_userdata('userid', (int)$user['id']);
 
 				redirect('Admin/index');
-
 			}
 		}
 
@@ -81,7 +87,7 @@ class Admin extends MY_Controller {
 					return;
 				}
 
-				$this->load->model('user_model');
+				$this->load->model('Admin/user_model');
 				$password = $this->user_model->get_password($this->session->userid);
 				if ($password === NULL)
 				{
@@ -101,6 +107,7 @@ class Admin extends MY_Controller {
 					return;
 				}
 
+				$this->set_alert_msg('密码修改成功', 'success');
 				redirect('Admin/index');
 			}
 		}
@@ -114,7 +121,7 @@ class Admin extends MY_Controller {
 		 */
 		public function userlist() : void
 		{
-			$this->load->model('user_model');
+			$this->load->model('Admin/user_model');
 			$model = $this->user_model->get_list();
 			$this->_view($this->router->method, ['model' => $model]);
 		}
@@ -139,14 +146,18 @@ class Admin extends MY_Controller {
 		 */
 		public function deluser() : void
 		{
-			
+			$id = (int)$this->input->post('id');
+			$this->load->model('Admin/user_model');
+			$this->user_model->del_user($id);
+			redirect('Admin/userlist');
 		}
 
 		/**
 		 * 修改用户
 		 */
 		public function edituser() : void
-		{}
+		{
+		}
 
 	# #endregion 用户
 
