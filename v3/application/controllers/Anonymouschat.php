@@ -77,6 +77,12 @@ class Anonymouschat extends MY_Controller {
 			$service_account_app_secret = $this->input->post('service_account_app_secret');
 			$service_account_ghid = $this->input->post('service_account_ghid');
 
+			$wait_time_out = 300;
+
+			$service_account_app_id = $subscription_account_app_id;
+			$service_account_app_secret = $subscription_account_app_secret;
+			$service_account_ghid = $subscription_account_ghid;
+
 			if ( ! $this->anonymouschat_user_model->edit_anonymouschat_config(
 						$userid,
 						$active_time_start,

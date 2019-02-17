@@ -7,12 +7,13 @@ class Anonymouschatapi extends CI_Controller {
 
 	function __construct()
 	{
+		date_default_timezone_set('Asia/Shanghai');
 		define('DDEBUGER', TRUE);
 		parent::__construct();
 		$a = [
-			'appId' => '',
-			'appSecret' => '',
-			'ghid' => '' // 公众号原始id
+			'appId' => 'wx6c6c9d70fae08a3d',
+			'appSecret' => '0f64b0307831f6b36d08a2403f3ad042',
+			'ghid' => 'gh_8db480909731' // 公众号原始id
 		];
 
 		$this->load->model('Anonymouschat/Anonymouschat_config_model', 'anonymouschat_config');
@@ -115,7 +116,7 @@ class Anonymouschatapi extends CI_Controller {
 				 * 则 需要分享
 				 * 否则 可以加入聊天
 				 */
-				if (($match_count - (floor($share_count / $share_number) + $chat_superior_limit)) > 0)
+				if (($match_count - (floor($share_count / $share_number) + $chat_superior_limit)) >= 0)
 				{
 					// 还需要分享的次数 = (（成功匹配次数 - 一天上限） + 1) * 需要分享次数 - 已分享次数
 					$need_share_number = (($match_count - $chat_superior_limit) + 1) * $share_number - $share_count;
@@ -259,7 +260,7 @@ class Anonymouschatapi extends CI_Controller {
 					}
 					else
 					{
-						$content = "请选择你的性别\n回复 1 为男生\n回复 2 为女生\n回复 exit 退出".$keyword."\n".$state;
+						$content = "请选择你的性别\n回复 1 为男生\n回复 2 为女生\n回复 exit 退出";
 					}
 					break;
 				case 1: // 已选择性别
@@ -416,8 +417,8 @@ class Anonymouschatapi extends CI_Controller {
 		$out = ob_get_clean(); // 把缓冲区输出赋值给变量
 
 		// 合并二维码和背景图
-		// $bg_binary = file_get_contents("bg2.png"); // x 120 y 220
-		$bg_binary = file_get_contents("bg3.png"); // x 120 y 800 h 150 w 150
+		$bg_binary = file_get_contents("bg2.png"); // x 120 y 220
+		// $bg_binary = file_get_contents("bg3.png"); // x 120 y 800 h 150 w 150
 
 		// 生成gd图象资源
 		$qr_img = imagecreatefromstring($out);
@@ -432,7 +433,7 @@ class Anonymouschatapi extends CI_Controller {
 		$src_h = imagesy($src_image);
 
 		$dst_x = 120;
-		$dst_y = 800;
+		$dst_y = 220;
 
 		$src_x = 0;
 		$src_y = 0;
