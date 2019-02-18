@@ -23,8 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-// $config['base_url'] = 'http://test.frp.gzfqwh.cn:8881/anonymouschat/ci3/';
-$config['base_url'] = 'http://148.70.58.43/anonymouschat/ci3/';
+$config['base_url'] = '';
 
 /*
 |--------------------------------------------------------------------------

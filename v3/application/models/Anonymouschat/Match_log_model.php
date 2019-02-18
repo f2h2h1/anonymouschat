@@ -84,7 +84,6 @@ class Match_log_model extends CI_Model {
 		}
 		else
 		{
-			logger('match_log1');
 			// 更新已有的记录
 			$id = $row[0]['id'];
 			$share_count = (int) $row[0]['share_count'];
@@ -92,7 +91,6 @@ class Match_log_model extends CI_Model {
 				'share_count' => ++$share_count,
 				'update_time' => $timestamp,
 			);
-			logger('match_log2', $data);
 			return $this->db->set($data)->where('id', $id)->update($this->table_name);
 		}
 	}

@@ -88,4 +88,18 @@ class Anonymouschat_config_model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_config_list() : ?array
+	{
+		$query = $this->db->get($this->table_name);
+		if ( ! $query instanceof CI_DB_result)
+		{
+			failed_query(__FILE__, __LINE__, $this->db->error());
+			return NULL;
+		}
+
+		$result = $query->result_array();
+
+		return $result;
+	}
 }

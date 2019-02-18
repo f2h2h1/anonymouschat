@@ -258,10 +258,10 @@ class Anonymouschat_model extends CI_Model {
 	/**
 	 * 获取匹配超时的记录
 	 */
-	public function get_match_failed_record()
+	public function get_match_failed_record(int $userid) : ?array
 	{
 		$timestamp = time();
-		$wait_time_out = $this->anonymouschat_config->get_config('wait_time_out'); // 匹配超时
+		$wait_time_out = $this->anonymouschat_config->get_config($userid, 'wait_time_out'); // 匹配超时
 		$timestamp = $timestamp - $wait_time_out;
 		$query = $this->db->select('id, openid, ghid, state')
 				->group_start()
@@ -271,62 +271,59 @@ class Anonymouschat_model extends CI_Model {
 					->where('state', 5)
 				->group_end()
 				->get($this->table_name);
-		// echo $this->db->last_query();
-		$row = NULL;
-		if ($query === FALSE)
+		if ( ! $query instanceof CI_DB_result)
 		{
-			return -1;
+			failed_query(__FILE__, __LINE__, $this->db->error());
+			return NULL;
 		}
 
-		$row = $query->result_array();
+		$result = $query->result_array();
 
-		return $row;
+		return $result;
 	}
 
 	/**
 	 * 获取需要提醒聊天超时的记录
 	 */
-	public function get_need_reminding_record()
+	public function get_need_reminding_record(int $userid) : ?array
 	{
 		$timestamp = time();
-		$reminding_time = $this->anonymouschat_config->get_config('chat_time_out') - 120;
+		$reminding_time = $this->anonymouschat_config->get_config($userid, 'chat_time_out') - 120;
 		$timestamp = $timestamp - $reminding_time;
 		$query = $this->db->select('id, openid, ghid, state, update_time')
 					->where('update_time <', $timestamp)->where('state =', 3)
 				->get($this->table_name);
-		// echo $this->db->last_query();
-		$row = NULL;
-		if ($query === FALSE)
+		if ( ! $query instanceof CI_DB_result)
 		{
-			return -1;
+			failed_query(__FILE__, __LINE__, $this->db->error());
+			return NULL;
 		}
 
-		$row = $query->result_array();
+		$result = $query->result_array();
 
-		return $row;
+		return $result;
 	}
 
 	/**
 	 * 获取聊天超时记录
 	 */
-	public function get_chat_time_out_record()
+	public function get_chat_time_out_record(int $userid) : ?array
 	{
 		$timestamp = time();
-		$chat_time_out = $this->anonymouschat_config->get_config('chat_time_out'); // 匹配超时
+		$chat_time_out = $this->anonymouschat_config->get_config($userid, 'chat_time_out'); // 匹配超时
 		$timestamp = $timestamp - $chat_time_out;
 		$query = $this->db->select('id, openid, ghid, state, update_time')
-					->where('update_time <', $timestamp)->where('state =', 3)
+				->where('update_time <', $timestamp)->where('state =', 3)
 				->get($this->table_name);
-		// echo $this->db->last_query();
-		$row = NULL;
-		if ($query === FALSE)
+		if ( ! $query instanceof CI_DB_result)
 		{
-			return -1;
+			failed_query(__FILE__, __LINE__, $this->db->error());
+			return NULL;
 		}
 
-		$row = $query->result_array();
+		$result = $query->result_array();
 
-		return $row;
+		return $result;
 	}
 
 	public function del_useless_record($id_list)

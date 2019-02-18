@@ -38,23 +38,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<?php if(isset($role)):?>
-					<?php if($role === 1):?>
-						<ul class="nav navbar-nav">
+					<ul class="nav navbar-nav">
+						<?php if($role === 1):?>
 							<li><a href="<?=site_url('Anonymouschat/anonymouschat_user_list')?>">用户列表</a></li>
 							<li><a href="<?=site_url('Admin/userlist')?>">用户</a></li>
 							<li><a href="<?=site_url('Admin/setup')?>">角色</a></li>
 							<li><a href="#contact">路由</a></li>
 							<li><a href="#contact">菜单</a></li>
-						</ul>
-					<?php elseif($role === 2):?>
-						<ul class="nav navbar-nav">
+						<?php elseif($role === 2):?>
 							<li><a href="<?=site_url('Anonymouschat/anonymouschat_user_list')?>">用户列表</a></li>
-						</ul>
-					<?php elseif($role === 3):?>
-						<ul class="nav navbar-nav">
+						<?php elseif($role === 3):?>
 							<li><a href="<?=site_url('Anonymouschat/edit_anonymouschat_user')?>/<?=$this->session->userid?>">设置</a></li>
-						</ul>
-					<?php endif;?>
+						<?php endif;?>
+						<li><a href="<?=site_url('Anonymouschat/readme')?>/<?=$this->session->userid?>">说明</a></li>
+					</ul>
 				<?php endif;?>
 				<?php if(isset($username)):?>
 					<ul class="nav navbar-nav navbar-right">

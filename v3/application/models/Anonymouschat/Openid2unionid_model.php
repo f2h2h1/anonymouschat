@@ -36,16 +36,20 @@ class Openid2unionid_model extends CI_Model {
 		$query = $this->db->where('unionid =', $unionid)
 				->limit(1)
 				->get($this->table_name);
-		if ($query === FALSE)
+		if ( ! $query instanceof CI_DB_result)
 		{
-			return -1;
+			failed_query(__FILE__, __LINE__, $this->db->error());
+			return NULL;
 		}
-		$row = $query->result_array();
-		if (empty($row[0]['openid']))
+
+		$result = $query->first_row('array');
+		if ($result === NULL or !isset($result['openid']))
 		{
-			return '';
+			db_result_null(__FILE__, __LINE__, $this->db->error());
+			return NULL;
 		}
-		return $row[0]['openid'];
+
+		return $result['openid'];
 	}
 
 	public function add(string $openid, string $unionid) : bool

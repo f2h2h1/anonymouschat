@@ -240,7 +240,7 @@ class wechatlib
 		{
 			$key = "access_token@".$this->app_id;
 			$ret = $this->get_cache($key);
-			if ($ret === false || $ret['expire_time'] < time()) {
+			if ($ret === null || $ret['expire_time'] < time()) {
 				$this->del_cache($key);
 				$access_token = $this->refresh_get_access_token();
 				$key = "access_token@".$this->app_id;
@@ -1171,11 +1171,11 @@ class wechatlib
 			fclose($file);
 		}
 
-		private function get_cache(string $name) : array
+		private function get_cache(string $name) : ?array
 		{
 			$cache_file = $this->temp_path."/".$name;
 			if (!is_file($cache_file)) {
-				return false;
+				return null;
 			}
 
 			$errinfo['key'] = $name;

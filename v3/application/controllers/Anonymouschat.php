@@ -136,4 +136,12 @@ class Anonymouschat extends MY_Controller {
 	/**
 	 * 用户设置
 	 */
+
+	 /**
+	  * 说明
+	  */
+	public function readme()
+	{
+		$this->_view($this->router->method);
+	}
 }
