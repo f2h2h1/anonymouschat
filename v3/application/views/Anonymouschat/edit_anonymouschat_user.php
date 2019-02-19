@@ -41,6 +41,21 @@
 					<input type="number" class="form-control" required value="<?=isset($model['share_number'])?$model['share_number']:''?>" id="share_number" name="share_number">
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="invalid_time_text" class="col-sm-2 control-label">未到有效时间的回复</label>
+				<div class="col-sm-10">
+					<span class="help-block">开始时间为 {$start_time} / 结束时间为 {$end_time}</span>
+					<textarea class="form-control" rows="3"  required id="invalid_time_text" name="invalid_time_text"><?=isset($model['invalid_time_text'])?$model['invalid_time_text']:'同学你好，现在重磅推出匿名CP配对交友活动。
+为增加体验乐趣以及匹配成功率，活动仅每晚{$start_time}-{$end_time}点开放CP聊天，
+同学们不要错过时间。脱单黑科技，告别单身狗，欢迎奔走相告，拉同学一起来玩。'?></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="subscribe_text" class="col-sm-2 control-label">关注的回复</label>
+				<div class="col-sm-10">
+					<textarea class="form-control" rows="3"  required id="subscribe_text" name="subscribe_text"><?=isset($model['subscribe_text'])?$model['subscribe_text']:'嘿，你来啦：\n回复“交友”，开始召唤神秘的对方吧！.'?></textarea>
+				</div>
+			</div>
 		</fieldset>
 		<fieldset>
 			<legend>公众号设置</legend>

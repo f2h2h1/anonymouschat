@@ -77,6 +77,9 @@ class Anonymouschat extends MY_Controller {
 			$service_account_app_secret = $this->input->post('service_account_app_secret');
 			$service_account_ghid = $this->input->post('service_account_ghid');
 
+			$invalid_time_text = (string)$this->input->post('invalid_time_text');
+			$subscribe_text = (string)$this->input->post('subscribe_text');
+
 			$wait_time_out = 300;
 
 			$service_account_app_id = $subscription_account_app_id;
@@ -96,7 +99,9 @@ class Anonymouschat extends MY_Controller {
 						$subscription_account_ghid,
 						$service_account_app_id,
 						$service_account_app_secret,
-						$service_account_ghid
+						$service_account_ghid,
+						$invalid_time_text,
+						$subscribe_text
 					)
 				)
 			{

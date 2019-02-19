@@ -88,6 +88,12 @@ class Anonymouschatapi extends CI_Controller {
 				$content = "同学你好，现在重磅推出匿名CP配对交友活动。\n
 				为增加体验乐趣以及匹配成功率，活动仅每晚".date('g', $start_time)."-".date('g', $end_time)."点开放CP聊天，\n
 				同学们不要错过时间。脱单黑科技，告别单身狗，欢迎奔走相告，拉同学一起来玩。";
+
+				$content = $gh_config['invalid_time_text'];
+				$content = str_replace('{$start_time}', '%1$s', $content);
+				$content = str_replace('{$end_time}', '%2$s', $content);
+				$content = sprintf($content, date('g', $start_time), date('g', $end_time));
+
 				echo $this->wechat_lib->transmit_text($postObj, $content);
 				return;
 			}
@@ -119,8 +125,10 @@ class Anonymouschatapi extends CI_Controller {
 					}
 					$media_id = $this->create_share_qrcode($unionid);
 					$keyword = "你需要邀请{$need_share_number}位好友才能进入聊天";
-					$this->wechat_lib->send_custom_message_text($openid, $keyword);
-					$this->wechat_lib->send_custom_message_image($openid, $media_id);
+					// $this->wechat_lib->send_custom_message_text($openid, $keyword);
+					// $this->wechat_lib->send_custom_message_image($openid, $media_id);
+					$this->send_custom_message($openid, $keyword, 'text');
+					$this->send_custom_message($openid, $media_id, 'image');
 					exit;
 				}
 			}
@@ -210,7 +218,8 @@ class Anonymouschatapi extends CI_Controller {
 				if ($tag_openid !== NULL)
 				{
 					$keyword = "对方已退出聊天";
-					$this->wechat_lib->send_custom_message_text($tag_openid, $keyword);
+					// $this->wechat_lib->send_custom_message_text($tag_openid, $keyword);
+					$this->send_custom_message($tag_openid, $keyword, 'text');
 				}
 
 				echo $this->wechat_lib->transmit_text($postObj, "已退出聊天");
@@ -271,8 +280,10 @@ class Anonymouschatapi extends CI_Controller {
 						{
 							// $temp = "\n".$ret[0]."\n".$ret[1];
 							$keyword = "匹配成功".$temp;
-							$ret1 = $this->wechat_lib->send_custom_message_text($ret[0], $keyword);
-							$ret2 = $this->wechat_lib->send_custom_message_text($ret[1], $keyword);
+							// $ret1 = $this->wechat_lib->send_custom_message_text($ret[0], $keyword);
+							// $ret2 = $this->wechat_lib->send_custom_message_text($ret[1], $keyword);
+							$ret1 = $this->send_custom_message($ret[0], $keyword, 'text');
+							$ret2 = $this->send_custom_message($ret[1], $keyword, 'text');
 							exit;
 						}
 						$content = "聊天匹配中，请稍等".$temp;
@@ -300,21 +311,25 @@ class Anonymouschatapi extends CI_Controller {
 					$RX_TYPE = trim($postObj->MsgType);
 					if ($RX_TYPE == "text")
 					{
-						$filter_words_list = require_once(dirname(__FILE__).'/../third_party/tag.php');
+						$filter_words_list = require_once(APPPATH.'third_party/tag.php');
 						$keyword = strtr($keyword, array_combine($filter_words_list, array_fill(0, count($filter_words_list), '*')));
-						$this->wechat_lib->send_custom_message_text($openid, $keyword);
+						// $this->wechat_lib->send_custom_message_text($openid, $keyword);
+						$this->send_custom_message($openid, $keyword, 'text');
 					}
 					else if ($RX_TYPE == "voice")
 					{
-						$this->wechat_lib->send_custom_message_voice($openid, $postObj->MediaId);
+						// $this->wechat_lib->send_custom_message_voice($openid, $postObj->MediaId);
+						$this->send_custom_message($openid, $postObj->MediaId, 'voice');
 					}
 					else if ($RX_TYPE == "image")
 					{
-						$this->wechat_lib->send_custom_message_image($openid, $postObj->MediaId);
+						// $this->wechat_lib->send_custom_message_image($openid, $postObj->MediaId);
+						$this->send_custom_message($openid, $postObj->MediaId, 'image');
 					}
 					else
 					{
-						$this->wechat_lib->send_custom_message_text($openid, $keyword);
+						// $this->wechat_lib->send_custom_message_text($openid, $keyword);
+						$this->send_custom_message($openid, $keyword, 'text');
 					}
 					return;
 					break;
@@ -437,7 +452,8 @@ class Anonymouschatapi extends CI_Controller {
 				$this->db->trans_commit();
 
 				$content = '你已成功分享了一次.';
-				$this->wechat_lib->send_custom_message_text($share_openid, $content);
+				// $this->wechat_lib->send_custom_message_text($share_openid, $content);
+				$this->send_custom_message($share_openid, $content, 'text');
 			}
 
 			// 判断是否为关注消息
@@ -449,8 +465,14 @@ class Anonymouschatapi extends CI_Controller {
 			// 更新 share_log 表
 			// 更新 match_log 表
 
-			$content = "嘿，你来啦：\n回复“交友”，开始召唤神秘的对方吧！.";
+			// $content = "嘿，你来啦：\n回复“交友”，开始召唤神秘的对方吧！.";
 			// $content = "欢迎来到匿名CP情人节专场，回复“交友”即可开始";
+			$content = $gh_config['subscribe_text'];
+			// if (empty($content))
+			// {
+			// 	$content = "嘿，你来啦：\n回复“交友”，开始召唤神秘的对方吧！.";
+			// }
+
 			// 构造回复的字符串，xml格式
 			$resultStr = $this->wechat_lib->transmit_text($postObj, $content);
 			// 输出回复
@@ -490,9 +512,21 @@ class Anonymouschatapi extends CI_Controller {
 				}
 				foreach ($user_list as $gh_config)
 				{
+					$app_id = $gh_config['subscription_account_app_id'];
+					$app_secret = $gh_config['subscription_account_app_secret'];
+					$gh_id = $gh_config['subscription_account_ghid'];
+
+					if (empty($app_id) or empty($app_secret) or empty($gh_id))
+					{
+						continue;
+					}
+
+					$wait_time_out = (int)$gh_config['wait_time_out'];
+					$chat_time_out = (int)$gh_config['chat_time_out'];
+
 					// 通过公众号id获取公众号的详细信息
-					$this->wechat_lib->set_app_id($gh_config['subscription_account_app_id']);
-					$this->wechat_lib->set_app_secret($gh_config['subscription_account_app_secret']);
+					$this->wechat_lib->set_app_id($app_id);
+					$this->wechat_lib->set_app_secret($app_secret);
 		
 					// 获取该公众号在本系统的userid
 					$userid = $gh_config['userid'];
@@ -501,7 +535,7 @@ class Anonymouschatapi extends CI_Controller {
 					$id_list = array();
 
 					// 获取匹配超时的记录
-					$ret = $this->anonymouschat->get_match_failed_record($userid);
+					$ret = $this->anonymouschat->get_match_failed_record($gh_id, $wait_time_out);
 					if ( ! ($ret === -1 or empty($ret)))
 					{
 						echo sprintf("match_failed_record\n%s\n", var_export($ret, TRUE));
@@ -513,7 +547,8 @@ class Anonymouschatapi extends CI_Controller {
 								if (in_array($item['state'], array(0, 1, 2)))
 								{
 									$content = "匹配失败，已退出聊天模式";
-									$this->wechat_lib->send_custom_message_text($item['openid'], $content);
+									// $this->wechat_lib->send_custom_message_text($item['openid'], $content);
+									$this->send_custom_message($item['openid'], $content, 'text');
 								}
 							}
 							array_push($id_list, $item['id']);
@@ -521,7 +556,7 @@ class Anonymouschatapi extends CI_Controller {
 					}
 
 					// 获取超时的记录
-					$ret = $this->anonymouschat->get_chat_time_out_record($userid);
+					$ret = $this->anonymouschat->get_chat_time_out_record($gh_id, $chat_time_out);
 					if ( ! ($ret === -1 or empty($ret)))
 					{
 						echo sprintf("chat_time_out_record\n%s\n", var_export($ret, TRUE));
@@ -531,8 +566,8 @@ class Anonymouschatapi extends CI_Controller {
 							if ($item['state'] == 3)
 							{
 								$content = "温馨提示：聊天已超时\n聊天模式已退出";
-								$this->wechat_lib->send_custom_message_text($item['openid'], $content);
-
+								// $this->wechat_lib->send_custom_message_text($item['openid'], $content);
+								$this->send_custom_message($item['openid'], $content, 'text');
 								array_push($id_list, $item['id']);
 							}
 						}
@@ -544,7 +579,7 @@ class Anonymouschatapi extends CI_Controller {
 					}
 
 					// 获取需要提醒聊天超时的记录
-					$ret = $this->anonymouschat->get_need_reminding_record($userid);
+					$ret = $this->anonymouschat->get_need_reminding_record($gh_id, $chat_time_out);
 					if ( ! ($ret === -1 or empty($ret)))
 					{
 						echo sprintf("need_reminding_record\n%s\n", var_export($ret, TRUE));
@@ -558,7 +593,8 @@ class Anonymouschatapi extends CI_Controller {
 								if ($remaining_time > 0)
 								{
 									$content = "温馨提示：聊天时间剩余不足".$remaining_time."分钟";
-									$this->wechat_lib->send_custom_message_text($item['openid'], $content);
+									// $this->wechat_lib->send_custom_message_text($item['openid'], $content);
+									$this->send_custom_message($item['openid'], $content, 'text');
 								}
 							}
 						}
@@ -728,6 +764,52 @@ class Anonymouschatapi extends CI_Controller {
 	{
 		logger($describe, $data);
 		return $this->echo_error($postObj, $err);
+	}
+
+	private function send_custom_message(string $openid, string $data, string $type)
+	{
+		$failures_count = 0;
+
+		try
+		{
+			if ($type === 'text')
+			{
+				$this->wechat_lib->send_custom_message_text($openid, $data);
+			}
+			else if ($type === 'voice')
+			{
+				$this->wechat_lib->send_custom_message_voice($openid, $data);
+			}
+			else if ($type === 'image')
+			{
+				$this->wechat_lib->send_custom_message_image($openid, $data);
+			}
+		}
+		catch (app\simple\lib\HasErrorCodeException $e)
+		{
+			$error_code = $e->getWeChatErrorCode();
+			if ($error_code === '45015')
+			{
+				// 回复超过时限
+				logger('微信接口错误', $e);
+				return;
+			}
+			else if ($error_code === 40001 || $error_code === 40002 || $error_code === 40014)
+			{
+				// access_token错误
+				// 获取 access_token 时 AppSecret 错误，或者 access_token 无效。
+				// 40002 不合法的凭证类型
+				// 40014 不合法的凭证类型
+				$this->wechat_lib->refresh_access_token();
+				$failures_count++;
+			}
+
+			// 当失败次数大于 10 次时就抛出异常
+			if ($failures_count > 10)
+			{
+				throw $e;
+			}
+		}
 	}
 
 	/**

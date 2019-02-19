@@ -79,7 +79,9 @@ class Anonymouschat_user_model extends MY_model {
 			string $subscription_account_ghid,
 			string $service_account_app_id,
 			string $service_account_app_secret,
-			string $service_account_ghid
+			string $service_account_ghid,
+			string $invalid_time_text,
+			string $subscribe_text
 		) : bool
 	{
 		$timestamp = time();
@@ -96,6 +98,8 @@ class Anonymouschat_user_model extends MY_model {
 			'service_account_app_id' => $service_account_app_id,
 			'service_account_app_secret' => $service_account_app_secret,
 			'service_account_ghid' => $service_account_ghid,
+			'invalid_time_text' => $invalid_time_text,
+			'subscribe_text' => $subscribe_text,
 			'updatetime' => $timestamp
 		];
 

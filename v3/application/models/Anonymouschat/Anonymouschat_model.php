@@ -258,13 +258,13 @@ class Anonymouschat_model extends CI_Model {
 	/**
 	 * 获取匹配超时的记录
 	 */
-	public function get_match_failed_record(int $userid) : ?array
+	public function get_match_failed_record(string $gh_id, int $wait_time_out) : ?array
 	{
 		$timestamp = time();
-		$wait_time_out = $this->anonymouschat_config->get_config($userid, 'wait_time_out'); // 匹配超时
 		$timestamp = $timestamp - $wait_time_out;
 		$query = $this->db->select('id, openid, ghid, state')
 				->group_start()
+					->where('ghid =', $gh_id)
 					->where('update_time <', $timestamp)->where('state !=', 3)
 				->group_end()
 				->or_group_start()
@@ -285,12 +285,13 @@ class Anonymouschat_model extends CI_Model {
 	/**
 	 * 获取需要提醒聊天超时的记录
 	 */
-	public function get_need_reminding_record(int $userid) : ?array
+	public function get_need_reminding_record(string $gh_id, int $chat_time_out) : ?array
 	{
 		$timestamp = time();
-		$reminding_time = $this->anonymouschat_config->get_config($userid, 'chat_time_out') - 120;
+		$reminding_time = $chat_time_out - 120;
 		$timestamp = $timestamp - $reminding_time;
 		$query = $this->db->select('id, openid, ghid, state, update_time')
+					->where('ghid =', $gh_id)
 					->where('update_time <', $timestamp)->where('state =', 3)
 				->get($this->table_name);
 		if ( ! $query instanceof CI_DB_result)
@@ -307,12 +308,12 @@ class Anonymouschat_model extends CI_Model {
 	/**
 	 * 获取聊天超时记录
 	 */
-	public function get_chat_time_out_record(int $userid) : ?array
+	public function get_chat_time_out_record(string $gh_id, int $chat_time_out) : ?array
 	{
 		$timestamp = time();
-		$chat_time_out = $this->anonymouschat_config->get_config($userid, 'chat_time_out'); // 匹配超时
 		$timestamp = $timestamp - $chat_time_out;
 		$query = $this->db->select('id, openid, ghid, state, update_time')
+				->where('ghid =', $gh_id)
 				->where('update_time <', $timestamp)->where('state =', 3)
 				->get($this->table_name);
 		if ( ! $query instanceof CI_DB_result)
